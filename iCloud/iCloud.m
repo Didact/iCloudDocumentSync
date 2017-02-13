@@ -768,8 +768,8 @@
                         NSLog(@"[iCloud] Error while retrieving document: %s", __PRETTY_FUNCTION__);
                         NSError *error = [NSError errorWithDomain:[NSString stringWithFormat:@"%s error while retrieving document, %@, from iCloud", __PRETTY_FUNCTION__, document.fileURL] code:200 userInfo:@{@"FileURL": fileURL}];
                         
-                        // Pass data on to the completion handler on the main thread
-                        dispatch_async(dispatch_get_main_queue(), ^{
+                        // Pass data on to the completion handler a background thread
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                             handler(document, document.contents, error);
                         });
                         
@@ -780,8 +780,8 @@
                 // Log open
                 if (self.verboseLogging == YES) NSLog(@"[iCloud] Document already opened, retrieving content");
                 
-                // Pass data on to the completion handler on the main thread
-                dispatch_async(dispatch_get_main_queue(), ^{
+                // Pass data on to the completion handler a background thread
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     handler(document, document.contents, nil);
                 });
                 
@@ -794,8 +794,8 @@
                 NSLog(@"[iCloud] Error while retrieving document, %@, because the document is in conflict", documentName);
                 NSError *error = [NSError errorWithDomain:[NSString stringWithFormat:@"The iCloud document, %@, is in conflict. Please resolve this conflict before editing the document.", documentName] code:200 userInfo:@{@"FileURL": fileURL}];
                 
-                // Pass data on to the completion handler on the main thread
-                dispatch_async(dispatch_get_main_queue(), ^{
+                // Pass data on to the completion handler a background thread
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     handler(document, document.contents, error);
                 });
                 
@@ -804,8 +804,8 @@
                 // Log open
                 if (self.verboseLogging == YES) NSLog(@"[iCloud] Document editing disabled. The document is not currently editable, use the documentStateForFile: method to determine when the document is available again. The document and its contents will still be passed as parameters in the completion handler.");
                 
-                // Pass data on to the completion handler on the main thread
-                dispatch_async(dispatch_get_main_queue(), ^{
+                // Pass data on to the completion handler a background thread
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     handler(document, document.contents, nil);
                 });
                 
@@ -825,7 +825,8 @@
                 // Log save
                 if (self.verboseLogging == YES) NSLog(@"[iCloud] Saved and opened the document");
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                // Pass data on to the completion handler a background thread
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     handler(document, document.contents, nil);
                 });
             }];
